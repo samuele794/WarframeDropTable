@@ -30,6 +30,7 @@ tasks.named<Test>("test") {
 }
 
 dependencies {
+//    implementation("io.ktor:ktor-bom:2.1.3")
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-locations-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-compression-jvm:$ktor_version")
@@ -60,7 +61,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14
     implementation("org.slf4j:slf4j-jdk14:2.0.3")
 
-
+    //https://github.com/DrewCarlson/kjob
     implementation("org.drewcarlson:kjob-core:0.5.0")
     implementation("org.drewcarlson:kjob-api:0.5.0")
     implementation("org.drewcarlson:kjob-kron:0.5.0")

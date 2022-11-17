@@ -30,7 +30,7 @@ class WarframeTableProcessorTest {
         val htmlPage = testFileList.find { it.name == "warframeDrops.html" }!!
 
         val executionTime = measureTime {
-            tableProcessor.processMissionTable(htmlPage.reader().readText())
+            tableProcessor.processMissionTable(htmlPage.reader().readText()).await()
         }
 
         println(executionTime.toString())
@@ -43,7 +43,7 @@ class WarframeTableProcessorTest {
         val htmlPage = testFileList.find { it.name == "warframeDrops.html" }!!
 
         val executionTime = measureTime {
-            tableProcessor.processRelicTable(htmlPage.reader().readText())
+            tableProcessor.processRelicTable(htmlPage.reader().readText()).await()
         }
 
         println(executionTime.toString())
@@ -56,7 +56,7 @@ class WarframeTableProcessorTest {
         val htmlPage = testFileList.find { it.name == "warframeDrops.html" }!!
 
         val executionTime = measureTime {
-            tableProcessor.processKeysTable(htmlPage.reader().readText())
+            tableProcessor.processKeysTable(htmlPage.reader().readText()).await()
         }
 
         println(executionTime.toString())
@@ -69,7 +69,7 @@ class WarframeTableProcessorTest {
         val htmlPage = testFileList.find { it.name == "warframeDrops.html" }!!
 
         val executionTime = measureTime {
-            tableProcessor.processDynamicRewardTable(htmlPage.reader().readText())
+            tableProcessor.processDynamicRewardTable(htmlPage.reader().readText()).await()
         }
 
         println(executionTime.toString())
@@ -95,7 +95,7 @@ class WarframeTableProcessorTest {
         val htmlPage = testFileList.find { it.name == "warframeDrops.html" }!!
 
         val executionTime = measureTime {
-            tableProcessor.processCetusBountyRewardTable(htmlPage.reader().readText())
+            tableProcessor.processCetusBountyRewardTable(htmlPage.reader().readText()).await()
         }
 
         println(executionTime.toString())

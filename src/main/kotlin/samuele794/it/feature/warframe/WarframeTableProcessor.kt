@@ -32,7 +32,7 @@ class WarframeTableProcessor(private val exceptionTable: WarframeTableException)
             }
         }
 
-        return@withContext missionJob.await()
+        return@withContext missionJob
     }
 
     private fun processMissionTable(missionsTableListHtml: List<List<Element>>): List<MissionDropTable> {
@@ -135,7 +135,7 @@ class WarframeTableProcessor(private val exceptionTable: WarframeTableException)
             }
         }
 
-        return@withContext relicJob.await()
+        return@withContext relicJob
     }
 
 
@@ -217,7 +217,7 @@ class WarframeTableProcessor(private val exceptionTable: WarframeTableException)
             }
         }
 
-        return@withContext keysJob.await()
+        return@withContext keysJob
     }
 
     private fun processKeysTable(keysTableListHtml: List<List<Element>>): List<TableRotation<Item>> {
@@ -285,7 +285,7 @@ class WarframeTableProcessor(private val exceptionTable: WarframeTableException)
             }
         }
 
-        return@withContext dynamicJob.await()
+        return@withContext dynamicJob
     }
 
     private fun processDynamicRewardTable(keysTableListHtml: List<List<Element>>): List<TableRotation<Item>> {
@@ -413,7 +413,7 @@ class WarframeTableProcessor(private val exceptionTable: WarframeTableException)
             }
         }
 
-        return@withContext cetusJob.await()
+        return@withContext cetusJob
     }
 
     private fun processCetusBountyRewardTable(keysTableListHtml: List<List<Element>>): List<TableRotation<Stage>> {
