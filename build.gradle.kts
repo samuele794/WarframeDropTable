@@ -4,6 +4,7 @@ val logback_version: String by project
 val prometeus_version: String by project
 val koin_version: String by project
 val koin_ktor: String by project
+val exposedVersion: String by project
 
 plugins {
     application
@@ -30,23 +31,30 @@ tasks.named<Test>("test") {
 }
 
 dependencies {
-//    implementation("io.ktor:ktor-bom:2.1.3")
-    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-locations-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-compression-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-call-logging-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-call-id-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-metrics-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-metrics-micrometer-jvm:$ktor_version")
+    implementation(platform("io.ktor:ktor-bom:2.1.3"))
+    implementation("io.ktor:ktor-server-core-jvm")
+    implementation("io.ktor:ktor-server-locations-jvm")
+    implementation("io.ktor:ktor-server-compression-jvm")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm")
+    implementation("io.ktor:ktor-server-call-logging-jvm")
+    implementation("io.ktor:ktor-server-call-id-jvm")
+    implementation("io.ktor:ktor-server-metrics-jvm")
+    implementation("io.ktor:ktor-server-metrics-micrometer-jvm")
     implementation("io.micrometer:micrometer-registry-prometheus:$prometeus_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-tomcat-jvm:$ktor_version")
-    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
+    implementation("io.ktor:ktor-server-tomcat-jvm")
+    implementation("io.ktor:ktor-client-okhttp")
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
 
-    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version"){
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+    implementation("com.h2database:h2:2.1.214")
+
+
+    testImplementation("io.ktor:ktor-server-tests-jvm"){
         exclude("junit","junit" )
     }
 
@@ -70,9 +78,7 @@ dependencies {
     implementation("org.jsoup:jsoup:1.15.3")
 
     implementation ("io.insert-koin:koin-core:$koin_version")
-    // Koin for Ktor
     implementation ("io.insert-koin:koin-ktor:$koin_ktor")
-// SLF4J Logger
     implementation ("io.insert-koin:koin-logger-slf4j:$koin_ktor")
 
 // Koin Test features
