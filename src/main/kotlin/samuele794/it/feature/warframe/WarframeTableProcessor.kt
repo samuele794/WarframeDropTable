@@ -509,6 +509,28 @@ class WarframeTableProcessor(private val exceptionTable: WarframeTableException)
         return bontyTableProcessed
     }
 
+    suspend fun processSolarisBountyRewardTable(htmlPage: String) = withContext(Dispatchers.Default) {
+        val htmlPageParsed = Jsoup.parse(htmlPage)
+
+
+        val cetusJob = async {
+            val cetusTableListHtml = htmlPageParsed.select("h3#solarisRewards").next().first()
+                ?.children()
+                ?.first()
+                ?.children()
+                ?.toList()
+                ?.splitTables()
+
+            if (cetusTableListHtml != null) {
+                processCetusBountyRewardTable(cetusTableListHtml)
+            } else {
+                null
+            }
+        }
+
+        return@withContext cetusJob
+    }
+
     private fun List<Element>.splitTables(): List<List<Element>> {
         val targetTable = mutableListOf<List<Element>>()
         var sourceTable = mutableListOf<Element>()
