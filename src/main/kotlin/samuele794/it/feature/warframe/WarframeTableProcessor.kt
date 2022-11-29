@@ -520,6 +520,9 @@ class WarframeTableProcessor(private val exceptionTable: WarframeTableException)
                 ?.children()
                 ?.toList()
                 ?.splitTables()
+                ?.filter {
+                    !it.first().html().contains("PROFIT-TAKER")
+                }
 
             if (cetusTableListHtml != null) {
                 processCetusBountyRewardTable(cetusTableListHtml)
@@ -529,6 +532,130 @@ class WarframeTableProcessor(private val exceptionTable: WarframeTableException)
         }
 
         return@withContext cetusJob
+    }
+
+    suspend fun processProfitTakerBountyRewardTable(htmlPage: String) = withContext(Dispatchers.Default) {
+        val htmlPageParsed = Jsoup.parse(htmlPage)
+
+
+        val cetusJob = async {
+            val profitTableListHtml = htmlPageParsed.select("h3#solarisRewards").next().first()
+                ?.children()
+                ?.first()
+                ?.children()
+                ?.toList()
+                ?.splitTables()
+                ?.filter {
+                    it.first().html().contains("PROFIT-TAKER")
+                }
+
+            if (profitTableListHtml != null) {
+                processProfitTakerBountyRewardTableInternal(profitTableListHtml)
+            } else {
+                null
+            }
+        }
+
+        return@withContext cetusJob
+    }
+
+    private fun processProfitTakerBountyRewardTableInternal(keysTableListHtml: List<List<Element>>): List<TableRotation<Stage>> {
+        val bontyTableProcessed = keysTableListHtml.let { bountyTableList ->
+            val bountyDropTableList = mutableListOf<TableRotation<Stage>>()
+
+
+            bountyTableList.forEach {
+                var bountyTable: BountyDropTable? = null
+                var rotation: Rotation<Stage>? = null
+                var stage: Stage? = null
+
+                it.map { element ->
+                    Elements(element.children().toMutableList().filter { mElement -> mElement.html().isNotEmpty() })
+                }.forEachIndexed { index, elements ->
+                    if (elements.size > 1) {
+                        stage = stage?.addItem(Item(elements[0].html(), elements[1].html()))
+                    } else {
+                        val item = elements.first()
+                        if (item != null) {
+                            if (item.tag().name == "th") {
+                                when {
+                                    item.html().contains("Completion") -> {
+                                        var mRotation = rotation
+                                        if (mRotation != null) {
+                                            val mStage = stage
+                                            if (mStage != null) {
+                                                mRotation = mRotation.addItem(mStage)
+                                            }
+                                            bountyTable = bountyTable?.addRotation(mRotation) as BountyDropTable
+                                            rotation = null
+                                            stage = null
+                                        }
+                                        rotation = Rotation(item.html())
+                                    }
+
+                                    item.html().startsWith("Stage") || item.html().endsWith("Stage") -> {
+                                        val mStage = stage
+                                        if (mStage != null) {
+                                            rotation = rotation?.addItem(mStage)
+                                            stage = null
+                                        }
+                                        stage = Stage(item.html())
+                                    }
+
+                                    else -> {
+                                        var mBountyTable = bountyTable
+                                        if (mBountyTable != null) {
+                                            val mStage = stage
+                                            var mRotation = rotation
+                                            if (mStage != null && mRotation != null) {
+                                                mRotation = mRotation.addItem(mStage)
+                                                mBountyTable = mBountyTable.addRotation(mRotation) as BountyDropTable
+                                            }
+                                            bountyDropTableList.add(mBountyTable)
+
+                                            stage = null
+                                            rotation = null
+                                        }
+                                        bountyTable = BountyDropTable(item.html())
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
+                    if (index >= it.size - 1) {
+                        var mBountyTable = bountyTable
+                        if (mBountyTable != null) {
+                            val mStage = stage
+                            var mRotation = rotation
+                            if (mStage != null && mRotation != null) {
+                                mRotation = mRotation.addItem(mStage)
+                                mBountyTable = mBountyTable.addRotation(mRotation) as BountyDropTable
+                            }
+
+                            if (mStage != null && mRotation == null) {
+                                mBountyTable =
+                                    mBountyTable.addRotation(Rotation("", items = listOf(mStage))) as BountyDropTable
+                            }
+
+                            bountyDropTableList.add(mBountyTable)
+
+                            stage = null
+                            rotation = null
+                        }
+                        mBountyTable =
+                            rotation?.let { mRotation -> mBountyTable?.addRotation(mRotation) as BountyDropTable }
+                        logger.info("Save new mission table $mBountyTable")
+                        mBountyTable?.let { it1 -> bountyDropTableList.add(it1) }
+
+                    }
+                }
+            }
+            bountyDropTableList
+        }
+
+        return bontyTableProcessed
     }
 
     private fun List<Element>.splitTables(): List<List<Element>> {

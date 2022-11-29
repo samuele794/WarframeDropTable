@@ -115,5 +115,18 @@ class WarframeTableProcessorTest {
 
     }
 
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun testProcessProfitTakerBountyRewards() = runTest(dispatchTimeoutMs = 5000000_00L) {
+        val htmlPage = testFileList.find { it.name == "warframeDrops.html" }!!
+
+        val executionTime = measureTime {
+            tableProcessor.processProfitTakerBountyRewardTable(htmlPage.reader().readText()).await()
+        }
+
+        println(executionTime.toString())
+
+    }
+
 
 }
